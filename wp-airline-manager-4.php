@@ -20,6 +20,16 @@ define( 'WP_AIRLINE_MANAGER_4_URL', trailingslashit( plugin_dir_url( __FILE__ ) 
 define( 'WP_AIRLINE_MANAGER_4_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'WP_AIRLINE_MANAGER_4_INC', WP_AIRLINE_MANAGER_4_PATH . 'includes/' );
 
+// Require Composer autoloader if it exists.
+if ( file_exists( WP_AIRLINE_MANAGER_4_PATH . 'vendor/autoload.php' ) ) {
+	require_once WP_AIRLINE_MANAGER_4_PATH . 'vendor/autoload.php';
+}
+
+// Manually load Fieldmanager that's installed via composer.
+if ( ! defined( 'FM_VERSION' ) ) {
+	require_once WP_AIRLINE_MANAGER_4_PATH . 'wp-content/plugins/wordpress-fieldmanager/fieldmanager.php';
+}
+
 // Include files.
 $files = [
 	'functions/core.php'     => 'Core',

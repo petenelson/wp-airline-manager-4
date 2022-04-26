@@ -7,6 +7,9 @@
 
 namespace WPAirlineManager4\PostTypes\Route;
 
+use Fieldmanager_TextField;
+use Fieldmanager_Group;
+
 /**
  * Quickly provide a namespaced way to get functions.
  *
@@ -24,6 +27,7 @@ function n( $function ) {
  */
 function setup() {
 	add_action( 'init', n( 'register' ) );
+	add_action( 'fm_post_' . get_post_type_name(), n( 'add_custom_fields' ) );
 
 	// Add this to taxonomies.
 	add_filter( 'wp_am4_get_airport_object_types', n( 'opt_in' ) );
@@ -35,7 +39,7 @@ function setup() {
  * @return string
  */
 function get_post_type_name() {
-	return apply_filters( 'wp_am4_get_vehicle_post_type_name', 'wp-am4-route' );
+	return apply_filters( 'wp_am4_get_route_post_type_name', 'wp-am4-route' );
 }
 
 /**
@@ -94,15 +98,11 @@ function get_post_type_args() {
 		],
 		'capability_type'     => 'post',
 		'supports'            => [
-			'title',
-			'editor',
-			'author',
-			'thumbnail',
 			'excerpt',
 		],
 	];
 
-	return apply_filters( 'wp_am4_get_vehicle_post_type_args', $args );
+	return apply_filters( 'wp_am4_get_route_post_type_args', $args );
 }
 
 /**
@@ -115,111 +115,33 @@ function register() {
 }
 
 /**
- * Gets a list of custom columns and labels.
+ * Adds Fieldmanager custom fields.
  *
- * @return array
- */
-function get_custom_columns() {
-
-	// TODO
-	$columns = [
-		'battery_level'   => __( 'Battery', 'wp-airline-manager-4' ),
-		'estimated_range' => __( 'Range', 'wp-airline-manager-4' ),
-		'vehicle_id'      => __( 'ID', 'wp-airline-manager-4' ),
-		'vin'             => __( 'VIN', 'wp-airline-manager-4' ),
-	];
-
-	return apply_filters( 'wp_am4_vehicle_get_custom_columns', $columns );
-}
-
-/**
- * Updates the columns for the list of vehicles in admin.
- *
- * @param array $columns List of columns.
- */
-function update_table_columns( $columns ) {
-	$columns = array_merge( $columns, get_custom_columns() );
-
-	if ( isset( $columns['title'] ) ) {
-		$columns['title'] = __( 'Name' );
-	}
-
-	if ( isset( $columns['author'] ) ) {
-		unset( $columns['author'] );
-	}
-
-	return $columns;
-}
-
-/**
- * Handles the custom columns.
- *
- * @param  string $column  The column name.
- * @param  int    $post_id The post ID.
  * @return void
  */
-function handle_columns( $column, $post_id ) {
+function add_custom_fields() {
 
-	$vehicle_id = false;
+	$children = [];
 
-	if ( in_array( $column, array_keys( get_custom_columns() ), true ) ) {
-		$vehicle_id = Vehicle\get_vehicle_id( $post_id );
-	}
+	$children['distance'] = new \Fieldmanager_TextField(
+		__( 'Distance (km)', 'wp-airline-manager-4' ),
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 1,
+			],
+		]
+	);
 
-	if ( ! empty( $vehicle_id ) ) {
-		do_action( 'wp_am4_vehicle_do_custom_column_' . $column, $vehicle_id );
-	}
-}
+	$fm = new Fieldmanager_Group(
+		[
+			'name'           => 'route_details',
+			'serialize_data' => false,
+			'children'       => $children,
+		]
+	);
 
-/**
- * Outputs the vehicle ID value.
- *
- * @param  string $vehicle_id The vehicle ID.
- * @return void
- */
-function column_vehicle_id( $vehicle_id ) {
-	echo esc_html( $vehicle_id );
-}
-
-/**
- * Outputs the vehicle battery level.
- *
- * @param  string $vehicle_id The vehicle ID.
- * @return void
- */
-function column_battery_level( $vehicle_id ) {
-	$battery_level = Vehicle\get_battery_level( $vehicle_id );
-
-	if ( false !== $battery_level ) {
-		$battery_level = $battery_level . '%';
-	}
-
-	echo esc_html( $battery_level );
-}
-
-/**
- * Outputs the vehicle estimated range.
- *
- * @param  string $vehicle_id The vehicle ID.
- * @return void
- */
-function column_estimated_range( $vehicle_id ) {
-	$est_range = Vehicle\get_estimated_range( $vehicle_id );
-
-	if ( false !== $est_range ) {
-		// We'll look into km later.
-		$est_range = $est_range . 'mi';
-	}
-
-	echo esc_html( $est_range );
-}
-
-/**
- * Outputs the VIN.
- *
- * @param  string $vehicle_id The vehicle ID.
- * @return void
- */
-function column_vin( $vehicle_id ) {
-	echo esc_html( Vehicle\get_vin( $vehicle_id ) );
+	$fm->add_meta_box( 'Route Details', get_post_type_name() );
 }
