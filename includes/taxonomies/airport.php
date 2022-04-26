@@ -7,6 +7,9 @@
 
 namespace WPAirlineManager4\Taxonomies\Airport;
 
+use Fieldmanager_TextField;
+use Fieldmanager_Group;
+
 /**
  * Quickly provide a namespaced way to get functions.
  *
@@ -24,6 +27,7 @@ function n( $function ) {
  */
 function setup() {
 	add_action( 'init', n( 'register' ) );
+	add_action( 'fm_term_' . get_taxonomy_name(), n( 'add_custom_fields' ) );
 }
 
 /**
@@ -32,7 +36,7 @@ function setup() {
  * @return string
  */
 function get_taxonomy_name() {
-	return apply_filters( 'wp_am4_get_option_code_name', 'wp-am4-airport' );
+	return apply_filters( 'wp_am4_get_airport_taxonomy_name', 'wp-am4-airport' );
 }
 
 /**
@@ -86,4 +90,52 @@ function register() {
 	$object_types = apply_filters( 'wp_am4_get_airport_object_types', [] );
 
 	register_taxonomy( get_taxonomy_name(), $object_types, get_taxonomy_args() );
+}
+
+/**
+ * Adds Fieldmanager custom fields.
+ *
+ * @return void
+ */
+function add_custom_fields() {
+
+	$children = [];
+
+	$children['country'] = new \Fieldmanager_TextField( __( 'Country', 'wp-airline-manager-4' ) );
+
+	$children['runway'] = new \Fieldmanager_TextField(
+		__( 'Runway (ft)', 'wp-airline-manager-4' ),
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 1,
+				'max' => 20000,
+			],
+		]
+	);
+
+	$children['market'] = new \Fieldmanager_TextField(
+		__( 'Market (%)', 'wp-airline-manager-4' ),
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 1,
+				'max' => 100,
+			],
+		]
+	);
+
+	$fm = new Fieldmanager_Group(
+		[
+			'name'           => 'airport_details',
+			'serialize_data' => false,
+			'children'       => $children,
+		]
+	);
+
+	$fm->add_term_meta_box( 'Airport Details', get_taxonomy_name() );
 }
