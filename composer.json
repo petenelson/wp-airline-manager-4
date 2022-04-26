@@ -1,0 +1,23 @@
+{
+  "name": "petenelson/wp-airline-manager-4",
+  "type": "wordpress-plugin",
+  "description": "WP Airline Manager 4",
+  "authors": [
+    {
+      "name": "Pete Nelson",
+      "email": "pete@petenelson.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7",
+    "10up/phpcs-composer": "dev-master",
+    "yoast/phpunit-polyfills": "^1.0"
+  },
+  "scripts": {
+    "lint": "phpcs .",
+    "lint-fix": "phpcbf ."
+  }
+}
