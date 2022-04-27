@@ -7,8 +7,12 @@
 
 namespace WPAirlineManager4\PostTypes\Route;
 
+use WPAirlineManager4\Taxonomies\Airport;
+
 use Fieldmanager_TextField;
 use Fieldmanager_Group;
+use Fieldmanager_Autocomplete;
+use Fieldmanager_Datasource_Term;
 
 /**
  * Quickly provide a namespaced way to get functions.
@@ -123,6 +127,20 @@ function add_custom_fields() {
 
 	$children = [];
 
+	$children['from'] = new \Fieldmanager_Autocomplete(
+		__( 'From (Airport Code)', 'wp-airline-manager-4' ),
+		[
+			'datasource' => new \Fieldmanager_Datasource_Term( [ 'taxonomy' => Airport\get_taxonomy_name() ] ),
+		]
+	);
+
+	$children['to'] = new \Fieldmanager_Autocomplete(
+		__( 'To (Airport Code)', 'wp-airline-manager-4' ),
+		[
+			'datasource' => new \Fieldmanager_Datasource_Term( [ 'taxonomy' => Airport\get_taxonomy_name() ] ),
+		]
+	);
+
 	$children['distance'] = new \Fieldmanager_TextField(
 		__( 'Distance (km)', 'wp-airline-manager-4' ),
 		[
@@ -131,6 +149,43 @@ function add_custom_fields() {
 			'field_class'   => 'small-text',
 			'attributes'    => [
 				'min' => 1,
+			],
+		]
+	);
+
+	$children['demand_y'] = new \Fieldmanager_TextField(
+		__( 'Demand (Y/F/J)', 'wp-airline-manager-4' ),
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 0,
+				'max' => 3000,
+			],
+		]
+	);
+
+	$children['demand_j'] = new \Fieldmanager_TextField(
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 0,
+				'max' => 3000,
+			],
+		]
+	);
+
+	$children['demand_f'] = new \Fieldmanager_TextField(
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 0,
+				'max' => 3000,
 			],
 		]
 	);
