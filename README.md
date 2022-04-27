@@ -5,36 +5,18 @@ WordPress plugin to keep track of stats for your [Airline Manager 4](https://www
 * CPTs
 
 ** Route
-	** From Airport Tax
-	** To Airport Tax
-	** Distance
-	** Demand (Y/J/F)
-	** Notes
 	** Route Flags Tax
 
 ** Fleet Plane
-	** Route Assigned To
-	** Name
-	** Notes
 	** Tax: Plane
 	** Tax: Fleet Flags
 
+** Flights
+	** Income
+	** CPT: Route
+	** CPT: Fleet Plane
+
 * Taxonomies
-
-** Airport
-	** Code
-	** Country & Name
-	** Market
-	** Runway
-
-** Plane
-	** Speed
-	** Range
-	** Seats
-	** Runway
-	** Fuel
-	** CO2
-	** Type (Pax/Cargo)
 
 ** Fleet Flags
 	** Speed Boost
@@ -46,4 +28,3 @@ WordPress plugin to keep track of stats for your [Airline Manager 4](https://www
 	** High Profit
 	** Low Profit
 	** Needs Attention
-

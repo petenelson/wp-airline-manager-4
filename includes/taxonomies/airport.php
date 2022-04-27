@@ -101,7 +101,21 @@ function add_custom_fields() {
 
 	$children = [];
 
+	$children['hub']     = new \Fieldmanager_Checkbox( __( 'Hub', 'wp-airline-manager-4' ) );
 	$children['country'] = new \Fieldmanager_TextField( __( 'Country', 'wp-airline-manager-4' ) );
+
+	$children['runway'] = new \Fieldmanager_TextField(
+		__( 'Runway (ft)', 'wp-airline-manager-4' ),
+		[
+			'input_type'    => 'number',
+			'default_value' => 0,
+			'field_class'   => 'small-text',
+			'attributes'    => [
+				'min' => 1,
+				'max' => 20000,
+			],
+		]
+	);
 
 	$children['runway'] = new \Fieldmanager_TextField(
 		__( 'Runway (ft)', 'wp-airline-manager-4' ),

@@ -36,7 +36,9 @@ $files = [
 	'functions/cli.php'      => false,
 	'functions/cache.php'    => false,
 	'post-types/route.php'   => 'PostTypes\Route',
+	'post-types/fleet.php'   => 'PostTypes\Fleet',
 	'taxonomies/airport.php' => 'Taxonomies\Airport',
+	'taxonomies/plane.php'   => 'Taxonomies\Plane',
 ];
 
 foreach ( $files as $file => $namespace ) {
