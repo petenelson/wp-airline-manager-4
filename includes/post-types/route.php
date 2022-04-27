@@ -32,8 +32,9 @@ function n( $function ) {
 function setup() {
 	add_action( 'init', n( 'register' ) );
 	add_action( 'fm_post_' . get_post_type_name(), n( 'add_custom_fields' ) );
+	add_filter( 'wp_insert_post_data', n( 'set_custom_post_title' ) );
 
-	// Add this to taxonomies.
+	// Opt this in to taxonomies.
 	add_filter( 'wp_am4_get_airport_object_types', n( 'opt_in' ) );
 }
 
@@ -199,4 +200,53 @@ function add_custom_fields() {
 	);
 
 	$fm->add_meta_box( 'Route Details', get_post_type_name() );
+}
+
+/**
+ * Sets the custom post title based on the From/To airport codes.
+ *
+ * @param array $data An array of slashed, sanitized, and processed post data.
+ * @param array
+ */
+function set_custom_post_title( $data ) {
+
+	if ( $data['post_type'] !== get_post_type_name() || 'publish' !== $data['post_status'] ) {
+		return $data;
+	}
+
+	$post = filter_var_array(
+		$_POST, // phpcs:ignore
+		[
+			'route_details' => [
+				'flags' => FILTER_REQUIRE_ARRAY,
+			],
+		],
+	);
+
+	if ( empty( $post['route_details'] ) ) {
+		return $data;
+	}
+
+	// Get the from/to airport terms.
+	$route_details = filter_var_array(
+		$post['route_details'],
+		[
+			'from' => FILTER_SANITIZE_NUMBER_INT,
+			'to'   => FILTER_SANITIZE_NUMBER_INT,
+		]
+	);
+
+	$route_details['from'] = absint( $route_details['from'] );
+	$route_details['to']   = absint( $route_details['to'] );
+
+	if ( ! empty( $route_details['from'] ) && ! empty( $route_details['to'] ) ) {
+
+		$from_term = get_term( $route_details['from'] );
+		$to_term   = get_term( $route_details['to'] );
+
+		$data['post_title'] = strtoupper( $from_term->name ) . '-' . strtoupper( $to_term->name );
+		$data['post_name']  = strtolower( $data['post_title'] );
+	}
+
+	return $data;
 }
