@@ -137,3 +137,12 @@ function styles() {
 function admin_styles() {
 	wp_enqueue_style( 'wp-airline-manager-4-admin' );
 }
+
+/**
+ * Returns the AM4 icon URL.
+ *
+ * @return string
+ */
+function get_icon_url() {
+	return WP_AIRLINE_MANAGER_4_URL . 'assets/img/am4-16x16.png';
+}

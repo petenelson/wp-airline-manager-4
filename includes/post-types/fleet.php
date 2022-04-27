@@ -9,10 +9,11 @@ namespace WPAirlineManager4\PostTypes\Fleet;
 
 use WPAirlineManager4\Taxonomies\Plane;
 use WPAirlineManager4\PostTypes\Route;
-
 use Fieldmanager_Group;
 use Fieldmanager_Datasource_Term;
 use Fieldmanager_Autocomplete;
+
+use function WPAirlineManager4\Core\get_icon_url;
 
 /**
  * Quickly provide a namespaced way to get functions.
@@ -92,7 +93,7 @@ function get_post_type_args() {
 		'show_in_admin_bar'   => true,
 		'show_in_rest'        => true,
 		'menu_position'       => null,
-		'menu_icon'           => null,
+		'menu_icon'           => get_icon_url(),
 		'show_in_nav_menus'   => true,
 		'publicly_queryable'  => true,
 		'exclude_from_search' => false,

@@ -8,11 +8,12 @@
 namespace WPAirlineManager4\PostTypes\Route;
 
 use WPAirlineManager4\Taxonomies\Airport;
-
 use Fieldmanager_TextField;
 use Fieldmanager_Group;
 use Fieldmanager_Autocomplete;
 use Fieldmanager_Datasource_Term;
+
+use function WPAirlineManager4\Core\get_icon_url;
 
 /**
  * Quickly provide a namespaced way to get functions.
@@ -33,6 +34,8 @@ function setup() {
 	add_action( 'init', n( 'register' ) );
 	add_action( 'fm_post_' . get_post_type_name(), n( 'add_custom_fields' ) );
 	add_filter( 'wp_insert_post_data', n( 'set_custom_post_title' ) );
+
+	// TODO admin column for fleet planes.
 
 	// Opt this in to taxonomies.
 	add_filter( 'wp_am4_get_airport_object_types', n( 'opt_in' ) );
@@ -91,7 +94,7 @@ function get_post_type_args() {
 		'show_in_admin_bar'   => true,
 		'show_in_rest'        => true,
 		'menu_position'       => null,
-		'menu_icon'           => null,
+		'menu_icon'           => get_icon_url(),
 		'show_in_nav_menus'   => true,
 		'publicly_queryable'  => true,
 		'exclude_from_search' => false,
