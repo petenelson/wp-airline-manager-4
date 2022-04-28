@@ -12,6 +12,7 @@ use WPAirlineManager4\PostTypes\Route;
 use Fieldmanager_Group;
 use Fieldmanager_Datasource_Term;
 use Fieldmanager_Autocomplete;
+use Fieldmanager_TextField;
 
 use function WPAirlineManager4\Core\get_icon_url;
 
@@ -33,6 +34,7 @@ function n( $function ) {
 function setup() {
 	add_action( 'init', n( 'register' ) );
 	add_action( 'fm_post_' . get_post_type_name(), n( 'add_custom_fields' ) );
+	add_action( 'updated_postmeta', n( 'update_income_aggregates' ), 10, 3 );
 
 	// TODO needs route admin column.
 
@@ -150,6 +152,20 @@ function add_custom_fields() {
 		]
 	);
 
+	$children['income'] = new Fieldmanager_TextField(
+		__( 'Flight Income $', 'wp-airline-manager-4' ),
+		[
+			'add_more_label' => __( 'Add Flight', 'wp-airline-manager-4' ),
+			'limit'          => 10,
+			'input_type'     => 'number',
+			'default_value'  => 0,
+			'field_class'    => 'small-text',
+			'attributes'     => [
+				'min' => 0,
+			],
+		]
+	);
+
 	$fm = new Fieldmanager_Group(
 		[
 			'name'           => 'fleet_details',
@@ -159,4 +175,44 @@ function add_custom_fields() {
 	);
 
 	$fm->add_meta_box( 'Fleet Details', get_post_type_name() );
+}
+
+
+/**
+ * Updates the aggregate income meta values when updating the
+ * fleet_details_income post meta field.
+ *
+ * @param int    $meta_id  ID of metadata entry to update.
+ * @param int    $post_id  Post ID.
+ * @param string $meta_key Metadata key.
+ * @return void
+ */
+function update_income_aggregates( $meta_id, $post_id, $meta_key ) {
+
+	if ( 'fleet_details_income' !== $meta_key ) {
+		return;
+	}
+
+	if ( get_post_type_name() == get_post_type( $post_id ) && 'publish' === get_post_status( $post_id ) ) {
+
+		$fleet_details_income = get_post_meta( $post_id, 'fleet_details_income', true );
+
+		$total_flights  = 0;
+		$total_income   = 0;
+
+		if ( is_array( $fleet_details_income ) ) {
+
+			foreach ( $fleet_details_income as $income ) {
+				$income = absint( $income );
+				if ( ! empty( $income ) ) {
+					$total_flights++;
+					$total_income += $income;
+				}
+			}
+		}
+
+		$average_income = absint( ceil( $total_flights > 0 ? $total_income / $total_flights : 0 ) );
+
+		update_post_meta( $post_id, 'fleet_average_income', $average_income );
+	}
 }
