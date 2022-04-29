@@ -32,13 +32,14 @@ if ( ! defined( 'FM_VERSION' ) ) {
 
 // Include files.
 $files = [
-	'functions/core.php'     => 'Core',
-	'functions/cli.php'      => false,
-	'functions/cache.php'    => false,
-	'post-types/route.php'   => 'PostTypes\Route',
-	'post-types/fleet.php'   => 'PostTypes\Fleet',
-	'taxonomies/airport.php' => 'Taxonomies\Airport',
-	'taxonomies/plane.php'   => 'Taxonomies\Plane',
+	'functions/core.php'        => 'Core',
+	'functions/cli.php'         => false,
+	'functions/cache.php'       => false,
+	'post-types/route.php'      => 'PostTypes\Route',
+	'post-types/fleet.php'      => 'PostTypes\Fleet',
+	'taxonomies/airport.php'    => 'Taxonomies\Airport',
+	'taxonomies/plane.php'      => 'Taxonomies\Plane',
+	'taxonomies/fleet-flag.php' => 'Taxonomies\FleetFlag',
 ];
 
 foreach ( $files as $file => $namespace ) {

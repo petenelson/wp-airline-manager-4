@@ -8,6 +8,7 @@
 namespace WPAirlineManager4\PostTypes\Fleet;
 
 use WPAirlineManager4\Taxonomies\Plane;
+use WPAirlineManager4\Taxonomies\FleetFlag;
 use WPAirlineManager4\PostTypes\Route;
 use Fieldmanager_Group;
 use Fieldmanager_Datasource_Term;
@@ -38,6 +39,7 @@ function setup() {
 
 	// Opt this in to taxonomies.
 	add_filter( 'wp_am4_get_plane_object_types', n( 'opt_in' ) );
+	add_filter( 'wp_am4_get_fleet_flag_object_types', n( 'opt_in' ) );
 
 	add_action( 'manage_' . get_post_type_name() . '_posts_columns', n( 'update_table_columns' ) );
 	add_action( 'manage_' . get_post_type_name() . '_posts_custom_column', n( 'handle_columns' ), 10, 2 );
@@ -239,10 +241,18 @@ function get_speed( $post_id ) {
 
 	$speed = 0;
 
-	// TODO needs to take into account speed boost.
 	$term_id = get_post_meta( $post_id, 'fleet_details_plane', true );
 	if ( ! empty( $term_id ) ) {
 		$speed = Plane\get_speed( $term_id );
+	}
+
+	$fleet_flags = get_the_terms( $post_id, FleetFlag\get_taxonomy_name() );
+	$fleet_flags = ! is_array( $fleet_flags ) ? [] : $fleet_flags;
+
+	$slugs = wp_list_pluck( $fleet_flags, 'slug' );
+
+	if ( in_array( 'speed-increase', $slugs, true ) ) {
+		$speed = $speed * 1.10;
 	}
 
 	return $speed;
