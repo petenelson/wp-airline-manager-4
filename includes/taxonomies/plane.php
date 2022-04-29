@@ -190,3 +190,13 @@ function add_custom_fields() {
 
 	$fm->add_term_meta_box( 'Plane Details', get_taxonomy_name() );
 }
+
+/**
+ * Gets the speed of the plane.
+ *
+ * @param  int $term_id The term ID.
+ * @return int
+ */
+function get_speed( $term_id ) {
+	return absint( get_term_meta( $term_id, 'plane_details_speed', true ) );
+}

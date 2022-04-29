@@ -34,12 +34,13 @@ function n( $function ) {
 function setup() {
 	add_action( 'init', n( 'register' ) );
 	add_action( 'fm_post_' . get_post_type_name(), n( 'add_custom_fields' ) );
-	add_action( 'updated_postmeta', n( 'update_income_aggregates' ), 10, 3 );
-
-	// TODO needs route admin column.
+	add_action( 'updated_postmeta', n( 'maybe_update_post_meta' ), 10, 3 );
 
 	// Opt this in to taxonomies.
 	add_filter( 'wp_am4_get_plane_object_types', n( 'opt_in' ) );
+
+	add_action( 'manage_' . get_post_type_name() . '_posts_columns', n( 'update_table_columns' ) );
+	add_action( 'manage_' . get_post_type_name() . '_posts_custom_column', n( 'handle_columns' ), 10, 2 );
 }
 
 /**
@@ -177,6 +178,75 @@ function add_custom_fields() {
 	$fm->add_meta_box( 'Fleet Details', get_post_type_name() );
 }
 
+/**
+ * Updates average income for a fleet plane.
+ * @param int $post_id  Post ID.
+ * @return void
+ */
+function update_average_income( $post_id ) {
+	$fleet_details_income = get_post_meta( $post_id, 'fleet_details_income', true );
+
+	$total_flights  = 0;
+	$total_income   = 0;
+
+	if ( is_array( $fleet_details_income ) ) {
+
+		foreach ( $fleet_details_income as $income ) {
+			$income = absint( $income );
+			if ( ! empty( $income ) ) {
+				$total_flights++;
+				$total_income += $income;
+			}
+		}
+	}
+
+	$average_income = absint( ceil( $total_flights > 0 ? $total_income / $total_flights : 0 ) );
+
+	update_post_meta( $post_id, 'fleet_average_income', $average_income );
+}
+
+/**
+ * Updates the flight time for a fleet plane's route.
+ *
+ * @param  int $post_id The post ID.
+ * @return void
+ */
+function update_flight_time( $post_id ) {
+
+	$speed        = get_speed( $post_id );
+	$distance    = 0;
+	$flight_time = 0;
+
+	$route_id = get_post_meta( $post_id, 'fleet_details_route', true );
+	if ( ! empty( $route_id ) ) {
+		$distance = Route\get_distance( $route_id );
+	}
+
+	if ( $speed > 0 ) {
+		$flight_time = absint( ceil( ( $distance / $speed ) * 60 ) );
+	}
+
+	update_post_meta( $post_id, 'fleet_flight_time', $flight_time );
+}
+
+/**
+ * Gets the speed of the assigned plane in km/h.
+ *
+ * @param  int $post_id The post ID.
+ * @return int
+ */
+function get_speed( $post_id ) {
+
+	$speed = 0;
+
+	// TODO needs to take into account speed boost.
+	$term_id = get_post_meta( $post_id, 'fleet_details_plane', true );
+	if ( ! empty( $term_id ) ) {
+		$speed = Plane\get_speed( $term_id );
+	}
+
+	return $speed;
+}
 
 /**
  * Updates the aggregate income meta values when updating the
@@ -187,32 +257,121 @@ function add_custom_fields() {
  * @param string $meta_key Metadata key.
  * @return void
  */
-function update_income_aggregates( $meta_id, $post_id, $meta_key ) {
-
-	if ( 'fleet_details_income' !== $meta_key ) {
-		return;
-	}
+function maybe_update_post_meta( $meta_id, $post_id, $meta_key ) {
 
 	if ( get_post_type_name() == get_post_type( $post_id ) && 'publish' === get_post_status( $post_id ) ) {
 
-		$fleet_details_income = get_post_meta( $post_id, 'fleet_details_income', true );
+		switch ( $meta_key ) {
+			case 'fleet_details_income':
+				update_average_income( $post_id );
+				update_flight_time( $post_id );
+				break;
 
-		$total_flights  = 0;
-		$total_income   = 0;
-
-		if ( is_array( $fleet_details_income ) ) {
-
-			foreach ( $fleet_details_income as $income ) {
-				$income = absint( $income );
-				if ( ! empty( $income ) ) {
-					$total_flights++;
-					$total_income += $income;
-				}
-			}
+			case 'fleet_details_plane':
+			case 'fleet_details_route':
+				update_flight_time( $post_id );
+				break;
 		}
-
-		$average_income = absint( ceil( $total_flights > 0 ? $total_income / $total_flights : 0 ) );
-
-		update_post_meta( $post_id, 'fleet_average_income', $average_income );
 	}
+}
+
+/**
+ * Gets a list of custom columns and labels.
+ *
+ * @return array
+ */
+function get_custom_columns() {
+
+	$columns = [
+		'flight_time'    => __( 'Flight Time', 'wp-airline-manager-4' ),
+		'average_income' => __( 'Avg Income', 'wp-airline-manager-4' ),
+	];
+
+	return apply_filters( 'wp_am4_fleet_get_custom_columns', $columns );
+}
+
+/**
+ * Updates the columns for the list of fleet planes in admin.
+ *
+ * @param array $columns List of columns.
+ */
+function update_table_columns( $columns ) {
+	$columns = array_merge( $columns, get_custom_columns() );
+
+	if ( isset( $columns['title'] ) ) {
+		$columns['title'] = __( 'Name' );
+	}
+
+	$remove = [
+		'author',
+		'date',
+	];
+
+	foreach ( $remove as $column ) {
+		if ( isset( $columns[ $column ] ) ) {
+			unset( $columns[ $column ] );
+		}
+	}
+
+	return $columns;
+}
+
+/**
+ * Handles the custom columns.
+ *
+ * @param  string $column  The column name.
+ * @param  int    $post_id The post ID.
+ * @return void
+ */
+function handle_columns( $column, $post_id ) {
+
+	switch ( $column ) {
+		case 'average_income':
+			$average_income = '$' . number_format( get_average_income( $post_id ) );
+			echo esc_html( $average_income );
+			break;
+
+		case 'flight_time':
+			$minutes = get_flight_time( $post_id );
+			$hours   = floor( $minutes / 60 );
+			$minutes = $minutes - ( $hours * 60 );
+
+			echo esc_html( $hours . ":" . str_pad( $minutes, 2, "0", STR_PAD_LEFT) );
+			break;
+	}
+}
+
+/**
+ * Gets the average income for a fleet plane.
+ *
+ * @param  int $post_id The post ID.
+ * @return int
+ */
+function get_average_income( $post_id ) {
+	return absint( get_post_meta( $post_id, 'fleet_average_income', true ) );
+}
+
+/**
+ * Gets the flight time for this fleet plane's route.
+ *
+ * @param  int $post_id The post ID.
+ * @return int
+ */
+function get_flight_time( $post_id ) {
+
+	if ( false === get_post_meta( $post_id, 'fleet_flight_time', true ) ) {
+		update_flight_time( $post_id );
+	}
+
+	return absint( get_post_meta( $post_id, 'fleet_flight_time', true ) );
+}
+
+/**
+ * Gets the average hourly income for a fleet plane.
+ *
+ * @param  int $post_id The post ID.
+ * @return int
+ */
+function get_average_hourly_income( $post_id ) {
+	return absint( get_post_meta( $post_id, 'fleet_average_hourly_income', true ) );
 }

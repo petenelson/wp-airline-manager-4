@@ -35,10 +35,11 @@ function setup() {
 	add_action( 'fm_post_' . get_post_type_name(), n( 'add_custom_fields' ) );
 	add_filter( 'wp_insert_post_data', n( 'set_custom_post_title' ) );
 
-	// TODO admin column for fleet planes.
-
 	// Opt this in to taxonomies.
 	add_filter( 'wp_am4_get_airport_object_types', n( 'opt_in' ) );
+
+	add_action( 'manage_' . get_post_type_name() . '_posts_columns', n( 'update_table_columns' ) );
+	add_action( 'manage_' . get_post_type_name() . '_posts_custom_column', n( 'handle_columns' ), 10, 2 );
 }
 
 /**
@@ -252,4 +253,70 @@ function set_custom_post_title( $data ) {
 	}
 
 	return $data;
+}
+
+/**
+ * Gets the route distance.
+ *
+ * @param  int $post_id The post ID.
+ * @return int
+ */
+function get_distance( $post_id ) {
+	return absint( get_post_meta( $post_id, 'route_details_distance', true ) );
+}
+
+/**
+ * Gets a list of custom columns and labels.
+ *
+ * @return array
+ */
+function get_custom_columns() {
+
+	$columns = [
+		'fleet_plane' => __( 'Fleet Plane', 'wp-airline-manager-4' ),
+	];
+
+	return apply_filters( 'wp_am4_fleet_get_custom_columns', $columns );
+}
+
+/**
+ * Updates the columns for the list of fleet planes in admin.
+ *
+ * @param array $columns List of columns.
+ */
+function update_table_columns( $columns ) {
+	$columns = array_merge( $columns, get_custom_columns() );
+
+	if ( isset( $columns['title'] ) ) {
+		$columns['title'] = __( 'Name' );
+	}
+
+	$remove = [
+		'author',
+		'date',
+	];
+
+	foreach ( $remove as $column ) {
+		if ( isset( $columns[ $column ] ) ) {
+			unset( $columns[ $column ] );
+		}
+	}
+
+	return $columns;
+}
+
+/**
+ * Handles the custom columns.
+ *
+ * @param  string $column  The column name.
+ * @param  int    $post_id The post ID.
+ * @return void
+ */
+function handle_columns( $column, $post_id ) {
+
+	switch ( $column ) {
+		case 'fleet_plane':
+			echo esc_html( 'TODO' );
+			break;
+	}
 }
