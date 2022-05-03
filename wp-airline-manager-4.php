@@ -33,6 +33,7 @@ if ( ! defined( 'FM_VERSION' ) ) {
 // Include files.
 $files = [
 	'functions/core.php'        => 'Core',
+	'functions/rest-api.php'    => 'REST_API',
 	'functions/cli.php'         => false,
 	'functions/cache.php'       => false,
 	'post-types/route.php'      => 'PostTypes\Route',
