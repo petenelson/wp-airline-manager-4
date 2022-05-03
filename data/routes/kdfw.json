@@ -1,12 +1,4 @@
 {
-	"EVNT": {
-		"distance": 14219,
-		"demand": {
-			"y": 691,
-			"j": 205,
-			"f": 907
-		}
-	},
 
 	"CYYC": {
 		"distance": 2452,
@@ -16,10 +8,6 @@
 			"f": 85
 		}
 	},
-
-
-
-
 
 	"SMJP": {
 		"distance": 5294,
@@ -991,14 +979,6 @@
 		}
 	},
 
-	"SLPO": {
-		"distance": 6714,
-		"demand": {
-			"y": 270,
-			"j": 395,
-			"f": 101
-		}
-	},
 	"PANC": {
 		"distance": 4890,
 		"demand": {

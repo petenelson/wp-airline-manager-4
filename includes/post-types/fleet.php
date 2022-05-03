@@ -100,8 +100,8 @@ function get_post_type_args() {
 		'menu_position'       => null,
 		'menu_icon'           => get_icon_url(),
 		'show_in_nav_menus'   => true,
-		'publicly_queryable'  => true,
-		'exclude_from_search' => false,
+		'publicly_queryable'  => false,
+		'exclude_from_search' => true,
 		'has_archive'         => true,
 		'query_var'           => true,
 		'can_export'          => true,
@@ -139,6 +139,7 @@ function add_custom_fields() {
 	$children['plane'] = new \Fieldmanager_Autocomplete(
 		__( 'Plane', 'wp-airline-manager-4' ),
 		[
+			'required'   => true,
 			'datasource' => new \Fieldmanager_Datasource_Term( [ 'taxonomy' => Plane\get_taxonomy_name() ] ),
 		]
 	);
@@ -146,6 +147,7 @@ function add_custom_fields() {
 	$children['route'] = new \Fieldmanager_Autocomplete(
 		__( 'Route', 'wp-airline-manager-4' ),
 		[
+			'required'   => true,
 			'datasource' => new \Fieldmanager_Datasource_Post(
 				[
 					'query_args' => [
@@ -205,6 +207,16 @@ function update_average_income( $post_id ) {
 	$average_income = absint( ceil( $total_flights > 0 ? $total_income / $total_flights : 0 ) );
 
 	update_post_meta( $post_id, 'fleet_average_income', $average_income );
+
+	$flight_time   = get_flight_time( $post_id );
+	$hourly_income = 0;
+
+	if ( ! empty( $flight_time ) && ! empty( $average_income ) ) {
+		$income_per_minute = $average_income / $flight_time;
+		$hourly_income     = $income_per_minute * 60;
+	}
+
+	update_post_meta( $post_id, 'fleet_average_hourly_income', floor( $hourly_income ) );
 }
 
 /**
@@ -293,8 +305,10 @@ function maybe_update_post_meta( $meta_id, $post_id, $meta_key ) {
 function get_custom_columns() {
 
 	$columns = [
+		'route'          => __( 'Route', 'wp-airline-manager-4' ),
 		'flight_time'    => __( 'Flight Time', 'wp-airline-manager-4' ),
 		'average_income' => __( 'Avg Income', 'wp-airline-manager-4' ),
+		'hourly_income'  => __( 'Hourly Income', 'wp-airline-manager-4' ),
 	];
 
 	return apply_filters( 'wp_am4_fleet_get_custom_columns', $columns );
@@ -341,12 +355,24 @@ function handle_columns( $column, $post_id ) {
 			echo esc_html( $average_income );
 			break;
 
+		case 'hourly_income':
+			$hourly_income = '$' . number_format( get_average_hourly_income( $post_id ) );
+			echo esc_html( $hourly_income );
+			break;
+
 		case 'flight_time':
 			$minutes = get_flight_time( $post_id );
 			$hours   = floor( $minutes / 60 );
 			$minutes = $minutes - ( $hours * 60 );
 
 			echo esc_html( $hours . ":" . str_pad( $minutes, 2, "0", STR_PAD_LEFT) );
+			break;
+
+		case 'route':
+			$route_id = get_post_meta( $post_id, 'fleet_details_route', true );
+			if ( ! empty( $route_id ) ) {
+				echo esc_html( get_post_field( 'post_title', $route_id ) );
+			}
 			break;
 	}
 }
@@ -358,6 +384,11 @@ function handle_columns( $column, $post_id ) {
  * @return int
  */
 function get_average_income( $post_id ) {
+
+	if ( empty( get_post_meta( $post_id, 'fleet_average_income', true ) ) ) {
+		update_average_income( $post_id );
+	}
+
 	return absint( get_post_meta( $post_id, 'fleet_average_income', true ) );
 }
 
@@ -369,7 +400,7 @@ function get_average_income( $post_id ) {
  */
 function get_flight_time( $post_id ) {
 
-	if ( false === get_post_meta( $post_id, 'fleet_flight_time', true ) ) {
+	if ( empty( get_post_meta( $post_id, 'fleet_flight_time', true ) ) ) {
 		update_flight_time( $post_id );
 	}
 
@@ -383,5 +414,10 @@ function get_flight_time( $post_id ) {
  * @return int
  */
 function get_average_hourly_income( $post_id ) {
+
+	if ( empty( get_post_meta( $post_id, 'fleet_average_hourly_income', true ) ) ) {
+		update_average_income( $post_id );
+	}
+
 	return absint( get_post_meta( $post_id, 'fleet_average_hourly_income', true ) );
 }

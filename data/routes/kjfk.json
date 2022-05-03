@@ -1,12 +1,4 @@
 {
-	"TEST": {
-		"distance": 3500,
-		"demand": {
-			"y": 226,
-			"j": 244,
-			"f": 96
-		}
-	},
 
 	"MKBS": {
 		"distance": 2492,
@@ -518,14 +510,6 @@
 		}
 	},
 
-	"MTJA": {
-		"distance": 2494,
-		"demand": {
-			"y": 341,
-			"j": 252,
-			"f": 42
-		}
-	},
 
 	"KSTL": {
 		"distance": 1433,
@@ -748,14 +732,6 @@
 			"f": 107
 		}
 	},
-	"KMKE": {
-		"distance": 1197,
-		"demand": {
-			"y": 627,
-			"j": 254,
-			"f": 226
-		}
-	},
 	"KMWH": {
 		"distance": 3666,
 		"demand": {
@@ -835,14 +811,6 @@
 		}
 	},
 
-	"YPPH": {
-		"distance": 18714,
-		"demand": {
-			"y": 592,
-			"j": 217,
-			"f": 111
-		}
-	},
 
 	"EDAH": {
 		"distance": 6357,
