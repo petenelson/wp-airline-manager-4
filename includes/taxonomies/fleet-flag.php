@@ -1,6 +1,6 @@
 <?php
 /**
- * Fleet Flag taxonomy.
+ * Flag taxonomy.
  *
  * @package WP Airline Manager 4
  */
@@ -43,20 +43,20 @@ function get_taxonomy_name() {
 function get_taxonomy_args() {
 
 	$labels = [
-		'name'                  => _x( 'Fleet Flags', 'Taxonomy Fleet Flags', 'wp-airline-manager-4' ),
-		'singular_name'         => _x( 'Fleet Flag', 'Taxonomy Fleet Flag', 'wp-airline-manager-4' ),
-		'search_items'          => __( 'Search Fleet Flags', 'wp-airline-manager-4' ),
-		'popular_items'         => __( 'Popular Fleet Flags', 'wp-airline-manager-4' ),
-		'all_items'             => __( 'All Fleet Flags', 'wp-airline-manager-4' ),
-		'parent_item'           => __( 'Parent Fleet Flag', 'wp-airline-manager-4' ),
-		'parent_item_colon'     => __( 'Parent Fleet Flag', 'wp-airline-manager-4' ),
-		'edit_item'             => __( 'Edit Fleet Flag', 'wp-airline-manager-4' ),
-		'update_item'           => __( 'Update Fleet Flag', 'wp-airline-manager-4' ),
-		'add_new_item'          => __( 'Add New Fleet Flag', 'wp-airline-manager-4' ),
-		'new_item_name'         => __( 'New Fleet Flag Name', 'wp-airline-manager-4' ),
-		'add_or_remove_items'   => __( 'Add or remove Fleet Flags', 'wp-airline-manager-4' ),
-		'choose_from_most_used' => __( 'Choose from most used Fleet Flags', 'wp-airline-manager-4' ),
-		'menu_name'             => __( 'Fleet Flags', 'wp-airline-manager-4' ),
+		'name'                  => _x( 'Flags', 'Taxonomy Flags', 'wp-airline-manager-4' ),
+		'singular_name'         => _x( 'Flag', 'Taxonomy Flag', 'wp-airline-manager-4' ),
+		'search_items'          => __( 'Search Flags', 'wp-airline-manager-4' ),
+		'popular_items'         => __( 'Popular Flags', 'wp-airline-manager-4' ),
+		'all_items'             => __( 'All Flags', 'wp-airline-manager-4' ),
+		'parent_item'           => __( 'Parent Flag', 'wp-airline-manager-4' ),
+		'parent_item_colon'     => __( 'Parent Flag', 'wp-airline-manager-4' ),
+		'edit_item'             => __( 'Edit Flag', 'wp-airline-manager-4' ),
+		'update_item'           => __( 'Update Flag', 'wp-airline-manager-4' ),
+		'add_new_item'          => __( 'Add New Flag', 'wp-airline-manager-4' ),
+		'new_item_name'         => __( 'New Flag Name', 'wp-airline-manager-4' ),
+		'add_or_remove_items'   => __( 'Add or remove Flags', 'wp-airline-manager-4' ),
+		'choose_from_most_used' => __( 'Choose from most used Flags', 'wp-airline-manager-4' ),
+		'menu_name'             => __( 'Flags', 'wp-airline-manager-4' ),
 	];
 
 	$args = array(
