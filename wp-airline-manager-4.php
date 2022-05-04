@@ -41,6 +41,7 @@ $files = [
 	'taxonomies/airport.php'    => 'Taxonomies\Airport',
 	'taxonomies/plane.php'      => 'Taxonomies\Plane',
 	'taxonomies/fleet-flag.php' => 'Taxonomies\FleetFlag',
+	'taxonomies/route-flag.php' => 'Taxonomies\RouteFlag',
 ];
 
 foreach ( $files as $file => $namespace ) {

@@ -5,7 +5,7 @@
  * @package WP Airline Manager 4
  */
 
-namespace WPAirlineManager4\Taxonomies\FleetFlag;
+namespace WPAirlineManager4\Taxonomies\RouteFlag;
 
 /**
  * Quickly provide a namespaced way to get functions.
@@ -32,7 +32,7 @@ function setup() {
  * @return string
  */
 function get_taxonomy_name() {
-	return apply_filters( 'wp_am4_get_fleet_flag_taxonomy_name', 'wp-am4-fleet-flag' );
+	return apply_filters( 'wp_am4_get_route_flag_taxonomy_name', 'wp-am4-route-flag' );
 }
 
 /**
@@ -73,7 +73,7 @@ function get_taxonomy_args() {
 		'capabilities'      => array(),
 	);
 
-	return apply_filters( 'wp_am4_get_fleet_flag_taxonomy_args', $args );
+	return apply_filters( 'wp_am4_get_route_flag_taxonomy_args', $args );
 }
 
 /**
@@ -83,7 +83,7 @@ function get_taxonomy_args() {
  */
 function register() {
 	// Use a filter to get a list of post types.
-	$object_types = apply_filters( 'wp_am4_get_fleet_flag_object_types', [] );
+	$object_types = apply_filters( 'wp_am4_get_route_flag_object_types', [] );
 
 	register_taxonomy( get_taxonomy_name(), $object_types, get_taxonomy_args() );
 }

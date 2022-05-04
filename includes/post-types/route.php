@@ -37,6 +37,7 @@ function setup() {
 
 	// Opt this in to taxonomies.
 	add_filter( 'wp_am4_get_airport_object_types', n( 'opt_in' ) );
+	add_filter( 'wp_am4_get_route_flag_object_types', n( 'opt_in' ) );
 
 	add_action( 'manage_' . get_post_type_name() . '_posts_columns', n( 'update_table_columns' ) );
 	add_action( 'manage_' . get_post_type_name() . '_posts_custom_column', n( 'handle_columns' ), 10, 2 );
