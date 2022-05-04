@@ -63,7 +63,7 @@ function get_taxonomy_args() {
 		'labels'            => $labels,
 		'public'            => true,
 		'show_in_nav_menus' => true,
-		'show_admin_column' => false,
+		'show_admin_column' => true,
 		'hierarchical'      => false,
 		'show_tagcloud'     => true,
 		'show_ui'           => true,
