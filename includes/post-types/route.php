@@ -364,6 +364,7 @@ function handle_columns( $column, $post_id ) {
 					$html = '<a href="' . admin_url( 'edit.php?post_type=' . rawurlencode( Fleet\get_post_type_name() ) . '&s=' . rawurlencode( $plane['fleet_post_name'] ) ) . '">';
 					$html .= $plane['fleet_post_name'] . '</a>: ' . $plane['plane_term_name'] . '<br/>';
 					$html .= __( 'Hourly:', 'wp-airline-manager-4' ) . ' $' . number_format( Fleet\get_average_hourly_income( $plane['fleet_post_id'] ) );
+					$html .= '<br/>';
 					echo wp_kses_post( $html );
 				}
 			}
