@@ -371,7 +371,9 @@ function handle_columns( $column, $post_id ) {
 		case 'route':
 			$route_id = get_post_meta( $post_id, 'fleet_details_route', true );
 			if ( ! empty( $route_id ) ) {
-				echo esc_html( get_post_field( 'post_title', $route_id ) );
+				$html = '<a href="' . admin_url( 'edit.php?post_type=' . rawurlencode( Route\get_post_type_name() ) . '&s=' . rawurlencode( get_post_field( 'post_title', $route_id ) ) ) . '">';
+				$html .= get_post_field( 'post_title', $route_id ) . '</a>';
+				echo wp_kses_post( $html );
 			}
 			break;
 	}

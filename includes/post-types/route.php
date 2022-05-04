@@ -8,6 +8,8 @@
 namespace WPAirlineManager4\PostTypes\Route;
 
 use WPAirlineManager4\Taxonomies\Airport;
+use WPAirlineManager4\Taxonomies\Plane;
+use WPAirlineManager4\PostTypes\Fleet;
 use Fieldmanager_TextField;
 use Fieldmanager_Group;
 use Fieldmanager_Autocomplete;
@@ -323,7 +325,49 @@ function handle_columns( $column, $post_id ) {
 
 	switch ( $column ) {
 		case 'fleet_plane':
-			echo esc_html( 'TODO' );
+
+			$planes = [];
+
+			// Get the assigned fleet planes.
+			$query = new \WP_Query(
+				[
+					'post_type'      => Fleet\get_post_type_name(),
+					'posts_per_page' => 10,
+					'meta_query'     => [
+						[
+							'key'   => 'fleet_details_route',
+							'value' => $post_id,
+						],
+					],
+				]
+			);
+
+			foreach ( $query->posts as $fleet_post ) {
+
+				$plane_terms = get_the_terms( $fleet_post, Plane\get_taxonomy_name() );
+				$plane_terms = ! is_array( $plane_terms ) ? [] : $plane_terms;
+
+				if ( ! empty( $plane_terms ) ) {
+					$planes[] = [
+						'fleet_post_id'   => $fleet_post->ID,
+						'fleet_post_name' => $fleet_post->post_title,
+						'plane_term_id'   => $plane_terms[0]->term_id,
+						'plane_term_name' => $plane_terms[0]->name,
+					];
+				}
+			}
+
+			if ( empty( $planes ) ) {
+				echo '-';
+			} else {
+				foreach ( $planes as $plane ) {
+					$html = '<a href="' . admin_url( 'edit.php?post_type=' . rawurlencode( Fleet\get_post_type_name() ) . '&s=' . rawurlencode( $plane['fleet_post_name'] ) ) . '">';
+					$html .= $plane['fleet_post_name'] . '</a>: ' . $plane['plane_term_name'] . '<br/>';
+					$html .= __( 'Hourly:', 'wp-airline-manager-4' ) . ' $' . number_format( Fleet\get_average_hourly_income( $plane['fleet_post_id'] ) );
+					echo wp_kses_post( $html );
+				}
+			}
+
 			break;
 	}
 }
