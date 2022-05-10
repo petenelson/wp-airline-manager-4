@@ -284,6 +284,7 @@ function get_distance( $post_id ) {
 function get_custom_columns() {
 
 	$columns = [
+		'demand'      => __( 'Demand', 'wp-airline-manager-4' ),
 		'fleet_plane' => __( 'Fleet Plane', 'wp-airline-manager-4' ),
 		'notes'       => __( 'Notes', 'wp-airline-manager-4' ),
 	];
@@ -330,6 +331,16 @@ function handle_columns( $column, $post_id ) {
 
 		case 'notes':
 			echo wp_kses_post( get_post_field( 'post_excerpt', $post_id, $context = 'display' ) );
+			break;
+
+		case 'demand':
+			$demand = [
+				get_post_meta( $post_id, 'route_details_demand_y', true, ),
+				get_post_meta( $post_id, 'route_details_demand_j', true, ),
+				get_post_meta( $post_id, 'route_details_demand_f', true, ),
+			];
+
+			echo esc_html( implode( '/', $demand ) );
 			break;
 
 		case 'fleet_plane':
