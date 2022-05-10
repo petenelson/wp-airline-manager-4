@@ -43,6 +43,8 @@ function setup() {
 
 	add_action( 'manage_' . get_post_type_name() . '_posts_columns', n( 'update_table_columns' ) );
 	add_action( 'manage_' . get_post_type_name() . '_posts_custom_column', n( 'handle_columns' ), 10, 2 );
+
+	add_filter( 'redirect_post_location', n( 'redirect_to_list' ), 10, 2 );
 }
 
 /**
@@ -422,4 +424,27 @@ function get_average_hourly_income( $post_id ) {
 	}
 
 	return absint( get_post_meta( $post_id, 'fleet_average_hourly_income', true ) );
+}
+
+/**
+ * Redirect to the list after updating a fleet plane.
+ *
+ * @param  string $location The default location.
+ * @param  int    $post_id  The post ID.
+ * @return string
+ */
+function redirect_to_list( $location, $post_id ) {
+
+	if ( get_post_type_name() === get_post_type( $post_id ) ) {
+
+		$location = add_query_arg(
+			[
+				'post_type' => rawurlencode( get_post_type_name() ),
+				's'         => rawurlencode( get_post_field( 'post_title', $post_id, 'raw' ) ),
+			],
+			admin_url( 'edit.php' )
+		);
+	}
+
+	return $location;
 }
