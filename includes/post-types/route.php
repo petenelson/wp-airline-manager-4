@@ -285,6 +285,7 @@ function get_custom_columns() {
 
 	$columns = [
 		'demand'      => __( 'Demand', 'wp-airline-manager-4' ),
+		'distance'    => __( 'Distance', 'wp-airline-manager-4' ),
 		'fleet_plane' => __( 'Fleet Plane', 'wp-airline-manager-4' ),
 		'notes'       => __( 'Notes', 'wp-airline-manager-4' ),
 	];
@@ -341,6 +342,10 @@ function handle_columns( $column, $post_id ) {
 			];
 
 			echo esc_html( implode( '/', $demand ) );
+			break;
+
+		case 'distance':
+			echo esc_html( number_format( get_distance( $post_id ) ) . 'km' );
 			break;
 
 		case 'fleet_plane':
