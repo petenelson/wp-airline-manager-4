@@ -311,6 +311,7 @@ function get_custom_columns() {
 		'flight_time'    => __( 'Flight Time', 'wp-airline-manager-4' ),
 		'average_income' => __( 'Avg Income', 'wp-airline-manager-4' ),
 		'hourly_income'  => __( 'Hourly Income', 'wp-airline-manager-4' ),
+		'notes'          => __( 'Notes', 'wp-airline-manager-4' ),
 	];
 
 	return apply_filters( 'wp_am4_fleet_get_custom_columns', $columns );
@@ -368,6 +369,10 @@ function handle_columns( $column, $post_id ) {
 			$minutes = $minutes - ( $hours * 60 );
 
 			echo esc_html( $hours . ":" . str_pad( $minutes, 2, "0", STR_PAD_LEFT) );
+			break;
+
+		case 'notes':
+			echo wp_kses_post( get_post_field( 'post_excerpt', $post_id, $context = 'display' ) );
 			break;
 
 		case 'route':

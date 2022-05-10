@@ -285,6 +285,7 @@ function get_custom_columns() {
 
 	$columns = [
 		'fleet_plane' => __( 'Fleet Plane', 'wp-airline-manager-4' ),
+		'notes'       => __( 'Notes', 'wp-airline-manager-4' ),
 	];
 
 	return apply_filters( 'wp_am4_fleet_get_custom_columns', $columns );
@@ -326,6 +327,11 @@ function update_table_columns( $columns ) {
 function handle_columns( $column, $post_id ) {
 
 	switch ( $column ) {
+
+		case 'notes':
+			echo wp_kses_post( get_post_field( 'post_excerpt', $post_id, $context = 'display' ) );
+			break;
+
 		case 'fleet_plane':
 
 			$planes = [];
